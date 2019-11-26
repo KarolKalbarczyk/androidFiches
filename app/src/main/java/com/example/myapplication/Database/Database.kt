@@ -1,6 +1,8 @@
 package com.example.myapplication.Database
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = arrayOf(
@@ -8,4 +10,5 @@ import androidx.room.RoomDatabase
     WordRelation::class),version = 1)
 abstract class Database :RoomDatabase(){
     abstract val wordDao: WordDao
+
 }

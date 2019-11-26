@@ -1,5 +1,8 @@
 package com.example.myapplication.Database
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 interface WordService{
     fun getByLanguage(lang: Languages, limit:Int = 99999, offset:Int = 0):List<Word>
     fun getSynonimes(words:List<Word>, lang: Languages):List<Word>
@@ -8,9 +11,15 @@ interface WordService{
     fun addRelation(rel: WordRelation)
     fun getById(id:Int): Word?
 }
-
-class WordServiceImpl(val dao: WordDao):
+@Singleton
+class WordServiceImpl:
     WordService  {
+
+    val dao:WordDao
+    @Inject
+    constructor(dao: WordDao){
+        this.dao = dao
+    }
 
 
     override fun getByLanguage(lang: Languages, limit:Int, offset:Int):List<Word> =

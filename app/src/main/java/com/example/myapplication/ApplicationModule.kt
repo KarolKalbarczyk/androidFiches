@@ -13,7 +13,10 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule(val application: Application) {
+class ApplicationModule(val context:Context) {
+
+    @Provides
+    fun appContext() = context
 
     @Provides
     @Singleton
@@ -32,11 +35,10 @@ class ApplicationModule(val application: Application) {
     }
 
     @Provides
-    @Singleton
-    fun getWordService(dao: WordDao): WordService =
-        WordServiceImpl(dao)
+    fun getWordService(ser:WordServiceImpl): WordService =
+        ser
 }
-
+@Singleton
 @Component(modules =  [ApplicationModule::class])
 interface ApplicationComponent {
 

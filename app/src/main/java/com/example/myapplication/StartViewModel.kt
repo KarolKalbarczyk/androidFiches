@@ -4,9 +4,10 @@ import android.annotation.TargetApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.Database.Languages
+import com.example.myapplication.Database.WordService
 import java.lang.Integer.min
 @TargetApi(24)
-class StartViewModel:ViewModel() {
+class StartViewModel():ViewModel() {
 
     val languages: MutableLiveData<List<Languages>> by lazy {
         MutableLiveData<List<Languages>>()
@@ -22,5 +23,7 @@ class StartViewModel:ViewModel() {
                 list.filterIndexed {index, languages -> index!=i }
         }
     }
+
+
 
 }
