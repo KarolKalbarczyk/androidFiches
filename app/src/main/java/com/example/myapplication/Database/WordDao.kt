@@ -1,5 +1,6 @@
 package com.example.myapplication.Database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -7,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface WordDao {
     @Query("Select * from _Word where lang = :lang limit :offset,:limit")
-    fun getByLanguage(lang:String,limit:Int = 99999,offset:Int = 0):List<Word>
+    fun getByLanguage(lang:String,limit:Int = 99999,offset:Int = 0): List<Word>
 
     @Query("""
              Select w2.id,w2.lang,w2.text from _Word w inner join WordRelation r
@@ -23,6 +24,9 @@ interface WordDao {
 
     @Insert
     fun addWord(word: Word)
+
+    @Query("DELETE FROM _word")
+    fun nukeTable()
 
     @Insert
     fun addRelation(rel: WordRelation)

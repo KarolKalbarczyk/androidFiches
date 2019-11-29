@@ -10,21 +10,11 @@ class Fiche(val word1: Word, val word2: Word){
         word == word2
 }
 
-class FicheGenerator(val langs:Pair<Languages, Languages>, val limitPerRound:Int = 9999,
-                     val service: WordService
-){
-    private var offset = 0
-
-    fun next():List<Pair<Word, Word>>{
-        val words = service.getByLanguage(langs.first,limitPerRound,offset)
-        offset += limitPerRound
-        val synonimes = service.getSynonimes(words,langs.second)
-        val fisches = words.zip(synonimes).shuffled()
-        return fisches
-    }
-
-    fun getNextRound(){
-
-    }
-
+fun generateFisches(langs:Pair<Languages, Languages>,
+                    offset:Int,service: WordService,limit:Int = 9999):
+        List<Pair<Word, Word>> {
+    val words = service.getByLanguage(langs.first,limit,offset)
+    val synonimes = service.getSynonimes(words,langs.second)
+    val fisches = words.zip(synonimes).shuffled()
+    return fisches
 }
