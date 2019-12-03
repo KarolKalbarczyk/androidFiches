@@ -14,16 +14,16 @@ interface WordDao {
              Select w2.id,w2.lang,w2.text from _Word w inner join WordRelation r
              on w.id = r.fid inner join _Word w2 on w2.id = r.sid
              where w2.lang = :lang and w.id = :wordId""")
-    fun getBySynonimesAndLanguages(wordId:Int,lang:String): Word?
+    fun getBySynonimesAndLanguages(wordId:Long,lang:String): Word?
 
     @Query("""
              Select w2.id,w2.lang,w2.text from _Word w inner join WordRelation r
              on w.id = r.fid inner join _Word w2 on w2.id = r.sid
              where w2.lang = :lang and w.id in (:wordId)""")
-    fun getAllBySynonimesAndLanguages(wordId:List<Int>,lang:String):List<Word>
+    fun getAllBySynonimesAndLanguages(wordId:List<Long>,lang:String):List<Word>
 
     @Insert
-    fun addWord(word: Word)
+    fun addWord(word: Word):Long
 
     @Query("DELETE FROM _word")
     fun nukeTable()

@@ -30,7 +30,7 @@ class FicheActivity : AppCompatActivity() {
         langs = Pair(Languages.valueOf(intent.getStringExtra("first")),Languages.valueOf(intent.getStringExtra("second")))
         (application as MyApplication).appComponent.inject(this)
         textView = findViewById(R.id.tekst)
-        model = FicheViewModel(service)
+        model = FicheViewModel(service,2)
         initModel()
     }
 

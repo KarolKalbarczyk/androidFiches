@@ -3,9 +3,10 @@ package com.example.myapplication.Database
 import androidx.room.*
 
 @Entity(tableName = "_word")
-data class Word(@PrimaryKey var id:Int = 0,
+data class Word(
                 @Ignore var language: Languages = Languages.English,
                 @ColumnInfo(name = "text") var text:String = ""){
+    @PrimaryKey(autoGenerate = true) var id:Long = 0
     @ColumnInfo(name = "lang")
     var lang = language.name
 
@@ -27,7 +28,7 @@ data class Word(@PrimaryKey var id:Int = 0,
                 childColumns = arrayOf("sid")
             )
         ))
-class WordRelation(val fid:Int,val sid:Int)
+class WordRelation(val fid:Long,val sid:Long)
 
 enum class Languages {
     English,Polish,German

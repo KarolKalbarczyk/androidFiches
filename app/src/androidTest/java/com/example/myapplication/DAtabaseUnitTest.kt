@@ -22,7 +22,7 @@ class DAtabaseUnitTest {
         dao = db.wordDao
     }
 
-    @Test
+   /* @Test
     fun write(){
         val word = Word(
             1,
@@ -59,6 +59,6 @@ class DAtabaseUnitTest {
     @Throws(IOException::class)
     fun closeDb() {
         db.close()
-    }*/
+    }*/*/
 
     }

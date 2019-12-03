@@ -8,10 +8,11 @@ interface WordService{
     fun getByLanguage(lang: Languages, limit:Int = 99999, offset:Int = 0): List<Word>
     fun getSynonimes(words:List<Word>, lang: Languages):List<Word>
     fun getBySynonimesAndLanguages(word: Word, lang: Languages): Word?
-    fun addWord(word: Word)
+    fun addWord(word: Word):Long
     fun addRelation(rel: WordRelation)
     fun getById(id:Int): Word?
     fun deleteAll()
+    fun addSynonymes(word1: Word,word2:Word)
 }
 @Singleton
 class WordServiceImpl:
@@ -37,7 +38,14 @@ class WordServiceImpl:
     override fun getSynonimes(words:List<Word>, lang: Languages):List<Word> =
         dao.getAllBySynonimesAndLanguages(words.map { it.id },lang.name)
 
-    override fun addWord(word: Word) = dao.addWord(word)
+    override fun addSynonymes(word1:Word,word2:Word){
+        val id1 = addWord(word1)
+        val id2 = addWord(word2)
+        addRelation(WordRelation(id1,id2))
+        addRelation(WordRelation(id2,id1))
+    }
+
+    override fun addWord(word: Word):Long = dao.addWord(word)
 
     override fun addRelation(rel: WordRelation) = dao.addRelation(rel)
 
