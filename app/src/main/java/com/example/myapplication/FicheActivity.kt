@@ -23,6 +23,7 @@ class FicheActivity : AppCompatActivity() {
     lateinit var langs:Pair<Languages,Languages>
     lateinit var model :FicheViewModel
     lateinit var textView: AppCompatTextView
+    var roundLimit = 9999
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,7 @@ class FicheActivity : AppCompatActivity() {
         langs = Pair(Languages.valueOf(intent.getStringExtra("first")),Languages.valueOf(intent.getStringExtra("second")))
         (application as MyApplication).appComponent.inject(this)
         textView = findViewById(R.id.tekst)
-        model = FicheViewModel(service,2)
+        model = FicheViewModel(service,roundLimit)
         initModel()
     }
 
@@ -45,8 +46,28 @@ class FicheActivity : AppCompatActivity() {
         if (requestCode == answerCode && resultCode == Activity.RESULT_OK && data != null){
             model.addToAnswers(data.getBooleanExtra(
                 ANSWER_RESULT,true))
-            model.next()
+            if (model.next()) startEndOfRound()
         }
+        if (requestCode == SUMMARY_CODE) {
+
+        }
+    }
+
+    fun endRound(code:Int){
+        when (code) {
+            SUMMARY_GO_ON_CODE -> model.nextRound()
+            SUMMARY_REPEAT_ALL_CODE -> model.repeatRound()
+            SUMMARY_REPEAT_WRONG_CODE -> model.repeatWrong()
+            else -> startEndOfRound()
+        }
+    }
+
+    fun startEndOfRound(){
+        val intent = Intent(this,SummaryActivity::class.java).apply {
+            putExtra(SUMMARY_ALL,roundLimit)
+            putExtra(SUMMARY_GOOD,model.answers.count { it.second == true })
+        }
+        startActivityForResult(intent, answerCode)
     }
 
     fun initModel(){

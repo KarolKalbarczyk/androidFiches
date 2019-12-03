@@ -32,13 +32,23 @@ class FicheViewModel(val service: WordService, val limit:Int) : ViewModel(){
         answers.add(answer)
     }
 
-    fun next(){
+    fun next() :Boolean{
         val list = words
         if(list!=null) {
             fiche = list[i++]
             currentWord.value = fiche.first
-            nextRound()
+            return true
         }
+        return false
+    }
+
+    fun repeatRound(){
+        i = 0
+        next()
+    }
+
+    fun repeatWrong(){
+        words.filter {  }
     }
 
     fun getAnswer() = fiche.second.text

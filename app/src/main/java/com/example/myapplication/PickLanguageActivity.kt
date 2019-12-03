@@ -22,10 +22,10 @@ class PickLanguageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pick_language)
         val simpleList = findViewById<ListView>(R.id.simpleListView)
-        val excludedLang = intent.getStringExtra(EXCLUDED_LANG)
-        list = Languages.values().map { it.name }.filter { it != excludedLang }
+        val excludedLang = intent.getStringArrayExtra(EXCLUDED_LANG) ?: arrayOf()
+        list = Languages.values().map { it.name }.filter { excludedLang.contains(it)}
         simpleList.adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,list)
-        simpleList.onItemClickListener = AdapterView.OnItemClickListener( { parent: AdapterView<*>, view: View, pos:Int, id:Long -> addOnClick(pos) })
+        simpleList.onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View, pos:Int, id:Long -> addOnClick(pos) }
     }
 
     fun addOnClick(pos:Int){
