@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.AutoCompleteTextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.Observer
 import com.example.myapplication.Database.Languages
@@ -17,7 +16,7 @@ const val ANSWER_RESULT = "answer-bool"
 
 class FicheActivity : AppCompatActivity() {
 
-    val answerCode = 1
+    val ANSWER_CODE = 1
     @Inject
     lateinit var service:WordService
     lateinit var langs:Pair<Languages,Languages>
@@ -39,27 +38,31 @@ class FicheActivity : AppCompatActivity() {
         val intent = Intent(this,AnswerActivity::class.java).apply {
             putExtra("answer",model.getAnswer())
         }
-        startActivityForResult(intent, answerCode)
+        startActivityForResult(intent, ANSWER_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == answerCode && resultCode == Activity.RESULT_OK && data != null){
-            model.addToAnswers(data.getBooleanExtra(
-                ANSWER_RESULT,true))
-            if (model.next()) startEndOfRound()
+        if (requestCode == ANSWER_CODE && resultCode == Activity.RESULT_OK && data != null){
+            model.addToAnswers(data.getBooleanExtra(ANSWER_RESULT,true))
+            if (model.isNextRound()) startEndOfRound()
+            else model.next()
         }
-        if (requestCode == SUMMARY_CODE) {
-
+        if (requestCode == SUMMARY_CODE && data != null) {
+            endRound(data.getIntExtra(SUMMARY_RESULT,-1))
         }
     }
 
     fun endRound(code:Int){
         when (code) {
-            SUMMARY_GO_ON_CODE -> model.nextRound()
+            SUMMARY_GO_ON_CODE -> if(!model.isEndOfGame()) model.nextRound() else end()
             SUMMARY_REPEAT_ALL_CODE -> model.repeatRound()
             SUMMARY_REPEAT_WRONG_CODE -> model.repeatWrong()
             else -> startEndOfRound()
         }
+    }
+
+    fun end(){
+        print("AAAAAAAAAAAAAAAAAA")
     }
 
     fun startEndOfRound(){
@@ -67,12 +70,11 @@ class FicheActivity : AppCompatActivity() {
             putExtra(SUMMARY_ALL,roundLimit)
             putExtra(SUMMARY_GOOD,model.answers.count { it.second == true })
         }
-        startActivityForResult(intent, answerCode)
+        startActivityForResult(intent, SUMMARY_CODE)
     }
 
     fun initModel(){
         model.start(langs)
-        model.next()
         model.currentWord.observe(this, Observer<Word>{word -> textView.setText(word.text) })
     }
 }

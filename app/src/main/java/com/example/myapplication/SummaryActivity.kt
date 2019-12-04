@@ -14,6 +14,7 @@ const val SUMMARY_REPEAT_ALL_CODE = 100
 const val SUMMARY_REPEAT_WRONG_CODE = 101
 const val SUMMARY_GO_ON_CODE = 102
 const val SUMMARY_CODE = 103
+const val SUMMARY_RESULT = "summresult"
 class SummaryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +36,7 @@ class SummaryActivity : AppCompatActivity() {
 
     fun returnAnwer(code:Int){
         val intent = Intent().apply{
-            putExtra(ANSWER_RESULT,code)
+            putExtra(SUMMARY_RESULT,code)
         }
         setResult(Activity.RESULT_OK,intent)
         finish()

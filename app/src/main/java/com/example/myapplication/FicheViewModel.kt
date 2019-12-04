@@ -1,8 +1,11 @@
 package com.example.myapplication
 
 import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.Database.Languages
 import com.example.myapplication.Database.Word
@@ -22,6 +25,7 @@ class FicheViewModel(val service: WordService, val limit:Int) : ViewModel(){
     lateinit var words: List<Pair<Word,Word>>
     lateinit var fiche:Pair<Word,Word>
     lateinit var langs:Pair<Languages,Languages>
+    var endCounter:Int = 0
     val answers = mutableListOf<Answer>()
     val currentWord:MutableLiveData<Word> by lazy {
         MutableLiveData<Word>()
@@ -32,43 +36,50 @@ class FicheViewModel(val service: WordService, val limit:Int) : ViewModel(){
         answers.add(answer)
     }
 
-    fun next() :Boolean{
-        val list = words
-        if(list!=null) {
-            fiche = list[i++]
+
+    fun generateFisches(langs:Pair<Languages, Languages>,
+                        offset:Int,service: WordService,limit:Int = 9999): List<Pair<Word, Word>> {
+        val words = service.getByLanguage(langs.first,limit,offset)
+        val synonimes = service.getSynonimes(words,langs.second)
+        val fisches = words.zip(synonimes).shuffled()
+        return fisches
+    }
+
+    fun next(){
+        if(!isNextRound()) {
+            fiche = words[i++]
             currentWord.value = fiche.first
-            return true
         }
-        return false
     }
 
     fun repeatRound(){
+        answers.clear()
         i = 0
         next()
     }
 
     fun repeatWrong(){
-        words.filter {  }
+        val wrong:Set<Int> = answers.filter { it.second != true }.map { it.first }.toSet()
+        words = words.filterIndexed {ind,word -> ind in wrong  }
+        repeatRound()
     }
 
     fun getAnswer() = fiche.second.text
 
     fun start(lang: Pair<Languages,Languages>){
         langs = lang
+        setEndCounter()
         loadWords()
-        while(!::words.isInitialized){}
+    }
+
+    private fun setEndCounter(){
+        CoroutineScope(Job() + Dispatchers.IO).launch { endCounter = service.getAmountInLanguage(langs.first) }
     }
 
     fun loadWords(){
         var scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
-            //service.deleteAll()
-            /*service.addWord(Word(0,Languages.English,"aaa"))
-            service.addWord(Word(1,Languages.Polish,"bbb"))
-            service.addWord(Word(2,Languages.English,"ccc"))
-            service.addWord(Word(3,Languages.Polish,"ddd"))
-            service.addRelation(WordRelation(0,1))
-            service.addRelation(WordRelation(2,3))*/
+            service.deleteAll()
             if (offset == 0 ) {
                 service.addSynonymes(
                     Word(Languages.English, "sand"),
@@ -97,14 +108,17 @@ class FicheViewModel(val service: WordService, val limit:Int) : ViewModel(){
             }
             words = generateFisches(langs,offset,service,limit)
             offset += limit
+            Handler(Looper.getMainLooper()).post {next()}
         }
     }
 
+    fun isNextRound() = i == words.size
+
+    fun isEndOfGame() = offset+limit>=endCounter
+
     fun nextRound(){
-        if (i == words.size){
-            loadWords()
-            i = 0
-            next()
-        }
+        answers.clear()
+        i = 0
+        loadWords()
     }
 }

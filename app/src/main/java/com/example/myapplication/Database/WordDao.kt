@@ -22,11 +22,21 @@ interface WordDao {
              where w2.lang = :lang and w.id in (:wordId)""")
     fun getAllBySynonimesAndLanguages(wordId:List<Long>,lang:String):List<Word>
 
+    @Query("""
+        Select count() 
+        from _word
+        where lang = :lang
+    """)
+    fun getAmountInLanguage(lang:String):Int
+
     @Insert
     fun addWord(word: Word):Long
 
     @Query("DELETE FROM _word")
     fun nukeTable()
+
+    @Query("DELETE FROM WordRelation")
+    fun nukeRelation()
 
     @Insert
     fun addRelation(rel: WordRelation)

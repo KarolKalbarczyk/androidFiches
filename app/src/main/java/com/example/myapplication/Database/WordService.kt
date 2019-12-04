@@ -1,6 +1,5 @@
 package com.example.myapplication.Database
 
-import androidx.lifecycle.LiveData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,6 +11,7 @@ interface WordService{
     fun addRelation(rel: WordRelation)
     fun getById(id:Int): Word?
     fun deleteAll()
+    fun getAmountInLanguage(lang:Languages):Int
     fun addSynonymes(word1: Word,word2:Word)
 }
 @Singleton
@@ -26,6 +26,7 @@ class WordServiceImpl:
 
 
     override fun deleteAll() {
+        dao.nukeRelation()
         dao.nukeTable()
     }
 
@@ -44,6 +45,8 @@ class WordServiceImpl:
         addRelation(WordRelation(id1,id2))
         addRelation(WordRelation(id2,id1))
     }
+
+    override fun getAmountInLanguage(lang:Languages) = dao.getAmountInLanguage(lang.name)
 
     override fun addWord(word: Word):Long = dao.addWord(word)
 
